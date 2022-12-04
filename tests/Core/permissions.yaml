@@ -1,0 +1,45 @@
+groups:
+  visitor:
+    default: true
+    permissions:
+      - 'test.forum.view'
+      - 'test.security.authentication.login.self'
+      - 'test.security.authentication.register.self'
+  user:
+    permissions:
+      - 'test.security.authentication.logout.self'
+      - 'test.security.authentication.password.change.self'
+      - 'test.forum.comment.add'
+    inheritance:
+      - 'visitor'
+  moderator:
+    permissions:
+      - 'test.forum.comment.delete'
+    inheritance:
+      - 'user'
+  admin:
+    permissions:
+      - 'test.security.authentication.register.all'
+      - 'test.security.authentication.password.change.all'
+      - 'test.security.permissions.assign'
+      - 'test.security.permissions.groups.assign'
+      - 'test.security.permissions.groups.revoke'
+    inheritance:
+      - 'moderator'
+  root:
+    permissions:
+      - '*'
+users:
+  noPermissionUser:
+    permissions: []
+  groupMember:
+    groups:
+      - user
+  ownPermissionUser:
+    permissions:
+      - "test.security.permissions.assign"
+  mixedUser:
+    groups:
+      - user
+    permissions:
+      - "test.forum.comment.delete"

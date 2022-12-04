@@ -1,5 +1,5 @@
-# Currencies
-Based on ISO-4217
+# PX
+Permissions and their evaluating. Role Based System.
 
 ## Implementation
 
