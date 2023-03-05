@@ -55,6 +55,8 @@ trait HasPermissionsTrait
             $this->permissions->add($permission);
         }
 
+        unset($this->allPermissions);
+
         return $this;
     }
 
