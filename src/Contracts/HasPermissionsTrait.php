@@ -49,7 +49,7 @@ trait HasPermissionsTrait
 
         foreach ($permissions as $permission) {
             if (!$permission instanceof Permission) {
-                $permission = Permission::create($permission);
+                $permission = Permission::create((string) $permission);
             }
 
             $this->permissions->add($permission);
