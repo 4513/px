@@ -75,7 +75,7 @@ trait HasPermissionsTrait
                 $assignedPermission = preg_replace("/\./", "\\.", $assignedPermission);
                 $assignedPermission = preg_replace("/\*$/", ".*", $assignedPermission);
 
-                return preg_match("/$assignedPermission/", $permission) === 1;
+                return preg_match("/^$assignedPermission$/", $permission) === 1;
             }
         );
 
