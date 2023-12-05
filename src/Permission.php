@@ -11,15 +11,28 @@ use Stringable;
  *
  * @package MiBo\PX
  *
- * @author Michal Boris <michal.boris@gmail.com>
+ * @author Michal Boris <michal.boris27@gmail.com>
+ *
+ * @no-named-arguments Parameter names are not covered by the backward compatibility promise.
  */
 class Permission implements Stringable
 {
-    /** @var string */
     private string $name;
 
-    /** @var \MiBo\PX\Permission[] */
+    /** @var array<\MiBo\PX\Permission> */
     private static array $instances = [];
+
+    /**
+     * Checks that the current permission is exact as the provided one (comparison of their names).
+     *
+     * @param \MiBo\PX\Permission|\Stringable|string $permission Permission (name) to compare.
+     *
+     * @return bool True if both names are same, false otherwise.
+     */
+    final public function is(self|Stringable|string $permission): bool
+    {
+        return $this->toString() === (string) $permission;
+    }
 
     /**
      * @param string $name Name of the Permission.
@@ -38,7 +51,7 @@ class Permission implements Stringable
      *
      * @return \MiBo\PX\Permission Permission.
      */
-    public static function create(string $permission): Permission
+    public static function create(string $permission): self
     {
         if (key_exists($permission, self::$instances)) {
             return self::$instances[$permission];
@@ -47,18 +60,6 @@ class Permission implements Stringable
         self::$instances[$permission] = new self($permission);
 
         return self::$instances[$permission];
-    }
-
-    /**
-     * Checks that the current permission is exact as the provided one (comparison of their names).
-     *
-     * @param \MiBo\PX\Permission|\Stringable|string $permission Permission (name) to compare.
-     *
-     * @return bool True if both names are same, false otherwise.
-     */
-    final public function is(Permission|Stringable|string $permission): bool
-    {
-        return $this->toString() === (string) $permission;
     }
 
     /**

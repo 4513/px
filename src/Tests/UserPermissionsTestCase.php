@@ -13,7 +13,9 @@ use MiBo\PX\Contracts\HasPermissionsInterface;
  *
  * @package MiBo\PX\Tests
  *
- * @author Michal Boris <michal.boris@gmail.com>
+ * @author Michal Boris <michal.boris27@gmail.com>
+ *
+ * @no-named-arguments Parameter names are not covered by the backward compatibility promise.
  */
 abstract class UserPermissionsTestCase extends PermissionsTestCase
 {
@@ -22,6 +24,6 @@ abstract class UserPermissionsTestCase extends PermissionsTestCase
      */
     protected function getTarget(): HasPermissionsInterface
     {
-        return $this->getPermissionAssigner()->getUser($this->getTargetName());
+        return self::getPermissionAssigner()->getUser($this->getTargetName());
     }
 }

@@ -12,7 +12,7 @@ use Nette\Neon\Neon;
  *
  * @package MiBo\PX\Tests\Core\Groups
  */
-class UserTest extends GroupPermissionsTestCase
+final class UserTest extends GroupPermissionsTestCase
 {
     /**
      * @inheritdoc

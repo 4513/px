@@ -12,7 +12,7 @@ use Nette\Neon\Neon;
  *
  * @package MiBo\PX\Tests\Core\Users
  *
- * @author Michal Boris <michal.boris@gmail.com>
+ * @author Michal Boris <michal.boris27@gmail.com>
  */
 class MixedUserTest extends UserPermissionsTestCase
 {

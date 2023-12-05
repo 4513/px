@@ -12,9 +12,9 @@ use Nette\Neon\Neon;
  *
  * @package MiBo\PX\Tests\Core\Groups
  *
- * @author Michal Boris <michal.boris@gmail.com>
+ * @author Michal Boris <michal.boris27@gmail.com>
  */
-class VisitorTest extends GroupPermissionsTestCase
+final class VisitorTest extends GroupPermissionsTestCase
 {
     /**
      * @inheritdoc

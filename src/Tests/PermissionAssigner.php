@@ -18,16 +18,14 @@ use MiBo\PX\Contracts\InheritsTrait;
  *
  * @package MiBo\PX\Tests
  *
- * @author Michal Boris <michal.boris@gmail.com>
+ * @author Michal Boris <michal.boris27@gmail.com>
+ *
+ * @no-named-arguments Parameter names are not covered by the backward compatibility promise.
  */
 class PermissionAssigner
 {
-    /** @var \MiBo\PX\Tests\PermissionLoader */
     protected PermissionLoader $loader;
 
-    /**
-     * @param \MiBo\PX\Tests\PermissionLoader $loader
-     */
     public function __construct(PermissionLoader $loader)
     {
         $this->loader = $loader;
@@ -54,14 +52,14 @@ class PermissionAssigner
             $groups[] = $this->getGroup($inheritance);
         }
 
-        /** @var Collection<int, \MiBo\PX\Permission> $permissions */
+        /** @var \Illuminate\Support\Collection<int, \MiBo\PX\Permission> $permissions */
         $permissions = $group->get("permissions", new Collection([]));
 
         return new class ($groups, $permissions) implements HasPermissionsInterface {
             use InheritsTrait;
 
             /**
-             * @param HasPermissionsInterface[] $groups
+             * @param array<\MiBo\PX\Contracts\HasPermissionsInterface> $groups
              * @phpcs:ignore
              * @param \Illuminate\Support\Collection<int, \MiBo\PX\Permission|\Stringable|string>|array<\MiBo\PX\Permission|\Stringable|string> $permissions
              */
@@ -86,16 +84,16 @@ class PermissionAssigner
         $user = $this->getLoader()->getUser($name);
 
         if ($user !== null) {
-            /** @var Collection $permissions */
+            /** @var \Illuminate\Support\Collection $permissions */
             $permissions    = $user->get("permissions", new Collection([]));
             $assignedGroups = $user->get("groups", new Collection([]));
         } else {
             $permissions    = new Collection([]);
-            $assignedGroups = $this->getLoader()->getGroups()->search(function(Collection $collection) {
-                return $collection->get("default", false) === true;
-            });
+            $assignedGroups = $this->getLoader()->getGroups()->search(
+                static fn (Collection $collection): bool => $collection->get("default", false) === true
+            );
 
-            $assignedGroups = new Collection($assignedGroups ?: []);
+            $assignedGroups = new Collection($assignedGroups === false ? [] : $assignedGroups);
         }
 
         $groups = [];
@@ -104,12 +102,15 @@ class PermissionAssigner
             $groups[] = $this->getGroup($groupName);
         }
 
+        // @phpcs:disable:SlevomatCodingStandard.Namespaces.FullyQualifiedClassNameInAnnotation.NonFullyQualifiedClassName
+        // @phpcs:disable SlevomatCodingStandard.TypeHints.DisallowArrayTypeHintSyntax.DisallowedArrayTypeHintSyntax
+
         return new class ($groups, $permissions) implements HasPermissionsInterface {
             use InheritsTrait;
 
             /**
              * @param HasPermissionsInterface[] $groups
-             * @phpcs:ignore
+             * @phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
              * @param \Illuminate\Support\Collection<int, \MiBo\PX\Permission|\Stringable|string>|array<\MiBo\PX\Permission|\Stringable|string> $permissions
              */
             public function __construct(array $groups, Collection|array $permissions)
@@ -118,11 +119,11 @@ class PermissionAssigner
                 $this->inheritances = new Collection($groups);
             }
         };
+
+        // @phpcs:enable:SlevomatCodingStandard.Namespaces.FullyQualifiedClassNameInAnnotation.NonFullyQualifiedClassName
+        // @phpcs:enable SlevomatCodingStandard.TypeHints.DisallowArrayTypeHintSyntax.DisallowedArrayTypeHintSyntax
     }
 
-    /**
-     * @return \MiBo\PX\Tests\PermissionLoader
-     */
     protected function getLoader(): PermissionLoader
     {
         return $this->loader;

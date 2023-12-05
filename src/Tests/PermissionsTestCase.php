@@ -14,14 +14,14 @@ use PHPUnit\Framework\TestCase;
  *
  * @package MiBo\PX\Tests
  *
- * @author Michal Boris <michal.boris@gmail.com>
+ * @author Michal Boris <michal.boris27@gmail.com>
+ *
+ * @no-named-arguments Parameter names are not covered by the backward compatibility promise.
  */
 abstract class PermissionsTestCase extends TestCase
 {
-    /** @var \MiBo\PX\Tests\PermissionLoader */
     private static PermissionLoader $permissionLoader;
 
-    /** @var \MiBo\PX\Tests\PermissionAssigner */
     private static PermissionAssigner $permissionAssigner;
 
     /**
@@ -35,8 +35,16 @@ abstract class PermissionsTestCase extends TestCase
      * Returns configured permissions in array.
      *
      * @phpcs:ignore
-     * @phpstan-return array{groups: array<string, array{permissions: array<string>, inheritance: array<string>, default: bool}>, users: array{permissions: array<string>, groups: array<string>}}
-     * @return array{groups: array<string, array<string, array<string>|bool>>}
+     * @return array{
+     *     groups?: array<string, array{
+     *         permissions?: array<string>,
+     *         inheritance?: array<string>,
+     *         default?: bool
+     *     }>,
+     *     users?: array<string>,
+     *     permissions?: array<string>,
+     *     groups?: array<string>
+     * }
      */
     abstract protected function getConfig(): array;
 
@@ -59,64 +67,23 @@ abstract class PermissionsTestCase extends TestCase
     abstract protected function getTarget(): HasPermissionsInterface;
 
     /**
-     * @inheritdoc
-     */
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->load();
-    }
-
-    /**
-     * @internal
-     *
-     * @return void
-     */
-    protected function load(): void
-    {
-        static $loaded = false;
-
-        if ($loaded === true) {
-            return;
-        }
-
-        self::$permissionLoader   = new PermissionLoader($this->getConfig());
-        self::$permissionAssigner = new PermissionAssigner(self::$permissionLoader);
-
-        $loaded = true;
-    }
-
-    /**
      * @small
      *
-     * @coversNothing
+     * @covers \MiBo\PX\Contracts\HasPermissionsTrait::getPermissions
+     * @covers \MiBo\PX\Contracts\HasPermissionsTrait::hasPermission
+     * @covers \MiBo\PX\Contracts\HasPermissionsTrait::registerPermissions
+     * @covers \MiBo\PX\Contracts\HasPermissionsTrait::hasNotPermission
+     * @covers \MiBo\PX\Contracts\InheritsTrait::getPermissions
+     * @covers \MiBo\PX\Permission::create
+     * @covers \MiBo\PX\Permission::__construct
+     * @covers \MiBo\PX\Permission::__toString
+     * @covers \MiBo\PX\Permission::toString
      *
      * @return void
      */
     public function testPermissions(): void
     {
         $this->verify($this->getTarget(), $this->getTargetVerifyData());
-    }
-
-    /**
-     * Runs the assertion on the target that it has and has not the permissions based on the provided data.
-     *
-     * @param \MiBo\PX\Contracts\HasPermissionsInterface $target Target to process.
-     * @param array{has: array<string>, hasNot: array<string>} $data Permissions split into whether they
-     *          should be assigned or not.
-     *
-     * @return void
-     */
-    protected function verify(HasPermissionsInterface $target, array $data): void
-    {
-        if (!empty($data["has"])) {
-            self::assertHasPermissions($target, $data["has"]);
-        }
-
-        if (!empty($data["hasNot"])) {
-            self::assertHasNotPermissions($target, $data["hasNot"]);
-        }
     }
 
     /**
@@ -127,7 +94,7 @@ abstract class PermissionsTestCase extends TestCase
      *
      * @return void
      */
-    public static function assertHasPermissions(HasPermissionsInterface $target, array $permissions)
+    public static function assertHasPermissions(HasPermissionsInterface $target, array $permissions): void
     {
         foreach ($permissions as $permission) {
             self::assertHasPermission($target, $permission);
@@ -142,7 +109,7 @@ abstract class PermissionsTestCase extends TestCase
      *
      * @return void
      */
-    public static function assertHasNotPermissions(HasPermissionsInterface $target, array $permissions)
+    public static function assertHasNotPermissions(HasPermissionsInterface $target, array $permissions): void
     {
         foreach ($permissions as $permission) {
             self::assertHasNotPermission($target, $permission);
@@ -179,6 +146,59 @@ abstract class PermissionsTestCase extends TestCase
             $target->hasNotPermission($permission),
             "Failed asserting that target has not permission $permission."
         );
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->load();
+    }
+
+    /**
+     * @internal
+     *
+     * @return void
+     */
+    protected function load(): void
+    {
+        static $loaded = false;
+
+        if ($loaded === true) {
+            return;
+        }
+
+        self::$permissionLoader   = new PermissionLoader($this->getConfig());
+        self::$permissionAssigner = new PermissionAssigner(self::$permissionLoader);
+
+        $loaded = true;
+    }
+
+    /**
+     * Runs the assertion on the target that it has and has not the permissions based on the provided data.
+     *
+     * @param \MiBo\PX\Contracts\HasPermissionsInterface $target Target to process.
+     * @param array{
+     *     has?: array<string>,
+     *     hasNot?: array<string>
+     * } $data Permissions split into whether they should be assigned or not.
+     *
+     * @return void
+     */
+    protected function verify(HasPermissionsInterface $target, array $data): void
+    {
+        if (key_exists('has', $data) && count($data['has']) > 0) {
+            self::assertHasPermissions($target, $data["has"]);
+        }
+
+        if (!array_key_exists('hasNot', $data) || count($data['hasNot']) === 0) {
+            return;
+        }
+
+        self::assertHasNotPermissions($target, $data["hasNot"]);
     }
 
     /**

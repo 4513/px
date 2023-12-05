@@ -19,7 +19,9 @@ use Stringable;
  *
  * @package MiBo\PX\Contracts
  *
- * @author Michal Boris <michal.boris@gmail.com>
+ * @author Michal Boris <michal.boris27@gmail.com>
+ *
+ * @no-named-arguments Parameter names are not covered by the backward compatibility promise.
  */
 interface HasPermissionsInterface
 {

@@ -1,16 +1,21 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<phpunit bootstrap="./vendor/autoload.php"
-         colors="true"
-         convertDeprecationsToExceptions="true"
-         convertNoticesToExceptions="true"
-         forceCoversAnnotation="true"
-         beStrictAboutTodoAnnotatedTests="true"
-         enforceTimeLimit="true">
-
-    <testsuites>
-        <testsuite name="Core Tests">
-            <directory>./tests/Core/</directory>
-        </testsuite>
-    </testsuites>
-
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bootstrap="./vendor/autoload.php" colors="true" enforceTimeLimit="true" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.1/phpunit.xsd" cacheDirectory=".phpunit.cache" requireCoverageMetadata="true">
+  <testsuites>
+    <testsuite name="Core Tests">
+      <directory suffix="Test.php">./tests/</directory>
+    </testsuite>
+  </testsuites>
+  <coverage/>
+  <source>
+    <include>
+      <directory suffix=".php">./src</directory>
+    </include>
+    <exclude>
+      <directory suffix=".php">./src/Tests</directory>
+    </exclude>
+  </source>
+  <php>
+    <ini name="display_errors" value="On" />
+    <ini name="display_startup_errors" value="On" />
+  </php>
 </phpunit>

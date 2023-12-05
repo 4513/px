@@ -14,25 +14,101 @@ use MiBo\PX\Permission;
  *
  * @package MiBo\PX\Tests
  *
- * @author Michal Boris <michal.boris@gmail.com>
+ * @author Michal Boris <michal.boris27@gmail.com>
+ *
+ * @no-named-arguments Parameter names are not covered by the backward compatibility promise.
  */
 class PermissionLoader
 {
-    /** @var \Illuminate\Support\Collection */
+    /** @var \Illuminate\Support\Collection<string, \Illuminate\Support\Collection<string, mixed>> */
     protected Collection $config;
 
     /**
-     * @phpcs:ignore
-     * @param array{groups: array<string, array{permissions: array<string>, inheritance: array<string>, default: bool}>, users: array<string, permissions: array<string>, groups: array<string>} $config
+     * @param array{
+     *     groups?: array<string, array{
+     *         permissions?: array<string>,
+     *         inheritance?: array<string>,
+     *         default?: bool
+     *     }>,
+     *     users?: array<string>,
+     *     permissions?: array<string>,
+     *     groups?: array<string>
+     * } $config
      */
     public function __construct(array $config)
     {
-        $this->config = new Collection([]);
+        $this->config = new Collection(
+            [
+                "groups" => new Collection($this->composeGroupConfig($config['groups'] ?? [])),
+                "users"  => new Collection($this->composeUserConfig($config['users'] ?? [])),
+            ]
+        );
+    }
 
-        $groups = [];
-        $users  = [];
+    /**
+     * @param string $name
+     *
+     * @return \Illuminate\Support\Collection<string, \Illuminate\Support\Collection<string>|bool>|null
+     */
+    public function getUser(string $name): ?Collection
+    {
+        /** @phpstan-var \Illuminate\Support\Collection<string, \Illuminate\Support\Collection<string>|bool>|null */
+        return $this->getUsers()->get($name);
+    }
 
-        foreach ($config["groups"] ?? [] as $groupName => $groupData) {
+    /**
+     * @return \Illuminate\Support\Collection<string, \Illuminate\Support\Collection<string>|bool>
+     */
+    public function getUsers(): Collection
+    {
+        /** @phpstan-var \Illuminate\Support\Collection<string, \Illuminate\Support\Collection<string>|bool> */
+        return $this->getConfig()->get("users", new Collection([]));
+    }
+
+    /**
+     * @param string $groupName
+     *
+     * @return \Illuminate\Support\Collection<string, \Illuminate\Support\Collection<string>|bool>|null
+     */
+    public function getGroup(string $groupName): ?Collection
+    {
+        /** @phpstan-var \Illuminate\Support\Collection<string, \Illuminate\Support\Collection<string>|bool>|null */
+        return $this->getGroups()->get($groupName);
+    }
+
+    /**
+     * @return \Illuminate\Support\Collection<string, \Illuminate\Support\Collection<string>|bool>
+     */
+    public function getGroups(): Collection
+    {
+        return $this->getConfig()->get("groups", new Collection([]));
+    }
+
+    /**
+     * @return \Illuminate\Support\Collection<string, \Illuminate\Support\Collection<string, mixed>>
+     */
+    protected function getConfig(): Collection
+    {
+        return $this->config;
+    }
+
+    /**
+     * @param array<string, array{
+     *     permissions?: array<string>,
+     *     inheritance?: array<string>,
+     *     default?: bool
+     * }> $config
+     *
+     * @return array<\Illuminate\Support\Collection<string, bool|\Illuminate\Support\Collection<int, string>>>
+     */
+    // @phpcs:ignore SlevomatCodingStandard.Complexity.Cognitive.ComplexityTooHigh
+    private function composeGroupConfig(array $config): array
+    {
+        if (count($config) === 0) {
+            return [];
+        }
+
+        foreach ($config as $groupName => $groupData) {
             $collectionGroup = [];
 
             foreach ($groupData["permissions"] ?? [] as $permission) {
@@ -50,7 +126,27 @@ class PermissionLoader
             $groups[$groupName] = new Collection($collectionGroup);
         }
 
-        foreach ($config["users"] ?? [] as $userName => $userData) {
+        return $groups;
+    }
+
+    /**
+     * @param array<string, array{
+     *     permissions?: array<string>,
+     *     groups?: array<string>
+     * }> $config
+     *
+     * @return array<\Illuminate\Support\Collection<string, bool|\Illuminate\Support\Collection<int, string>>>
+     */
+    // @phpcs:ignore SlevomatCodingStandard.Complexity.Cognitive.ComplexityTooHigh
+    private function composeUserConfig(array $config): array
+    {
+        if (count($config) === 0) {
+            return [];
+        }
+
+        $users = [];
+
+        foreach ($config as $userName => $userData) {
             $collectionUser = [];
 
             foreach ($userData["permissions"] ?? [] as $permission) {
@@ -67,58 +163,6 @@ class PermissionLoader
             $users[$userName] = new Collection($collectionUser);
         }
 
-        $this->config = new Collection(
-            [
-                "groups" => new Collection($groups),
-                "users"  => new Collection($users),
-            ]
-        );
-    }
-
-    /**
-     * @param string $name
-     *
-     * @return \Illuminate\Support\Collection|null
-     */
-    public function getUser(string $name): ?Collection
-    {
-        return $this->getUsers()->get($name);
-    }
-
-    /**
-     * @phpcs:ignore
-     * @return \Illuminate\Support\Collection{permissions: \Illuminate\Support\Collection<string>, groups: \Illuminate\Support\Collection<string>, default: bool}|null
-     */
-    public function getUsers(): Collection
-    {
-        return $this->getConfig()->get("users", new Collection([]));
-    }
-
-    /**
-     * @param string $groupName
-     *
-     * @phpcs:ignore
-     * @return \Illuminate\Support\Collection{permissions: \Illuminate\Support\Collection<string>, inheritance: \Illuminate\Support\Collection<string>, default: bool}|null
-     */
-    public function getGroup(string $groupName): ?Collection
-    {
-        return $this->getGroups()->get($groupName);
-    }
-
-    /**
-     * @phpcs:ignore
-     * @return \Illuminate\Support\Collection<string, \Illuminate\Support\Collection{permissions: \Illuminate\Support\Collection<string>, inheritance: \Illuminate\Support\Collection<string>, default: bool}|null>
-     */
-    public function getGroups(): Collection
-    {
-        return $this->getConfig()->get("groups", new Collection([]));
-    }
-
-    /**
-     * @return \Illuminate\Support\Collection
-     */
-    protected function getConfig(): Collection
-    {
-        return $this->config;
+        return $users;
     }
 }

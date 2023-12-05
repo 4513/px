@@ -4,3 +4,9 @@ phpstan.neon
 phpunit.xml
 vendor
 *.DS_Store
+
+.phpunit.cache/code-coverage/
+
+.idea/php-docker-settings.xml
+
+.phpunit.cache/

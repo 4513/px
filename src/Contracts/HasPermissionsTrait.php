@@ -7,6 +7,7 @@ namespace MiBo\PX\Contracts;
 use Illuminate\Support\Collection;
 use MiBo\PX\Permission;
 use Stringable;
+use function is_string;
 
 /**
  * Trait HasPermissionsTrait
@@ -21,7 +22,9 @@ use Stringable;
  *
  * @package MiBo\PX\Contracts
  *
- * @author Michal Boris <michal.boris@gmail.com>
+ * @author Michal Boris <michal.boris27@gmail.com>
+ *
+ * @no-named-arguments Parameter names are not covered by the backward compatibility promise.
  */
 trait HasPermissionsTrait
 {
@@ -30,35 +33,6 @@ trait HasPermissionsTrait
 
     /** @var \Illuminate\Support\Collection<int, \MiBo\PX\Permission> */
     private Collection $allPermissions;
-
-    /**
-     * @phpcs:ignore
-     * @param \Illuminate\Support\Collection<int, \MiBo\PX\Permission|\Stringable|string>|array<\MiBo\PX\Permission|\Stringable|string> $permissions
-     *
-     * @return static
-     */
-    protected function registerPermissions(Collection|array $permissions = []): static
-    {
-        if (!isset($this->permissions)) {
-            $this->permissions = new Collection([]);
-        }
-
-        if ($permissions instanceof Collection) {
-            $permissions = $permissions->toArray();
-        }
-
-        foreach ($permissions as $permission) {
-            if (!$permission instanceof Permission) {
-                $permission = Permission::create((string) $permission);
-            }
-
-            $this->permissions->add($permission);
-        }
-
-        unset($this->allPermissions);
-
-        return $this;
-    }
 
     /**
      * @inheritdoc
@@ -70,7 +44,7 @@ trait HasPermissionsTrait
         }
 
         $has = $this->getPermissions()->search(
-            function(Permission|Stringable|string $assignedPermission) use ($permission) {
+            static function(Permission|Stringable|string $assignedPermission) use ($permission) {
                 $assignedPermission = (string) $assignedPermission;
                 $assignedPermission = preg_replace("/\./", "\\.", $assignedPermission);
                 $assignedPermission = preg_replace("/\*$/", ".*", $assignedPermission);
@@ -104,5 +78,34 @@ trait HasPermissionsTrait
         $this->allPermissions = $permissions->unique();
 
         return $this->allPermissions;
+    }
+
+    /**
+     * @phpcs:ignore
+     * @param \Illuminate\Support\Collection<int, \MiBo\PX\Permission|\Stringable|string>|array<\MiBo\PX\Permission|\Stringable|string> $permissions
+     *
+     * @return static
+     */
+    protected function registerPermissions(Collection|array $permissions = []): static
+    {
+        if (!isset($this->permissions)) {
+            $this->permissions = new Collection([]);
+        }
+
+        if ($permissions instanceof Collection) {
+            $permissions = $permissions->toArray();
+        }
+
+        foreach ($permissions as $permission) {
+            if (!$permission instanceof Permission) {
+                $permission = Permission::create((string) $permission);
+            }
+
+            $this->permissions->add($permission);
+        }
+
+        unset($this->allPermissions);
+
+        return $this;
     }
 }

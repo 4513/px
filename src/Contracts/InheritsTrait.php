@@ -18,7 +18,9 @@ use Illuminate\Support\Collection;
  *
  * @package MiBo\PX\Contracts
  *
- * @author Michal Boris <michal.boris@gmail.com>
+ * @author Michal Boris <michal.boris27@gmail.com>
+ *
+ * @no-named-arguments Parameter names are not covered by the backward compatibility promise.
  */
 trait InheritsTrait
 {
@@ -41,7 +43,8 @@ trait InheritsTrait
         $permissions = $this->contractGetPermissions();
 
         if (!empty($this->inheritances)) {
-            $this->inheritances->each(function(HasPermissionsInterface $parent) use (&$permissions) {
+            // @phpcs:ignore SlevomatCodingStandard.PHP.DisallowReference.DisallowedInheritingVariableByReference
+            $this->inheritances->each(static function(HasPermissionsInterface $parent) use (&$permissions): void {
                 $permissions = $permissions->merge($parent->getPermissions());
             });
         }
