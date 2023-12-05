@@ -1,4 +1,7 @@
 # PX
+
+[![codecov](https://codecov.io/gh/4513/px/graph/badge.svg?token=GDYA37GMXC)](https://codecov.io/gh/4513/px)
+
 Permissions and their evaluating. Role Based System.
 
 ## Implementation
