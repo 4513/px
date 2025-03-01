@@ -12,7 +12,7 @@ composer require mibo/px
 
 ### Requirements
 * PHP ^8.0
-* illuminate/support ^9.36
+* illuminate/support ^10.0-^12.0
 
 ## Usage
 

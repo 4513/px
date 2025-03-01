@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace MiBo\PX\Tests\Core\Groups;
 
+use MiBo\PX\Contracts\HasPermissionsTrait;
+use MiBo\PX\Contracts\InheritsTrait;
+use MiBo\PX\Permission;
 use MiBo\PX\Tests\GroupPermissionsTestCase;
 use Nette\Neon\Neon;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Class RootTest
@@ -14,6 +18,9 @@ use Nette\Neon\Neon;
  *
  * @author Michal Boris <michal.boris27@gmail.com>
  */
+#[CoversClass(HasPermissionsTrait::class)]
+#[CoversClass(InheritsTrait::class)]
+#[CoversClass(Permission::class)]
 final class RootTest extends GroupPermissionsTestCase
 {
     /**

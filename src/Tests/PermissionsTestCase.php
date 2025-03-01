@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace MiBo\PX\Tests;
 
 use MiBo\PX\Contracts\HasPermissionsInterface;
+use PHPUnit\Framework\Attributes\Small;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -18,6 +19,7 @@ use PHPUnit\Framework\TestCase;
  *
  * @no-named-arguments Parameter names are not covered by the backward compatibility promise.
  */
+#[Small]
 abstract class PermissionsTestCase extends TestCase
 {
     private static PermissionLoader $permissionLoader;
@@ -66,21 +68,6 @@ abstract class PermissionsTestCase extends TestCase
      */
     abstract protected function getTarget(): HasPermissionsInterface;
 
-    /**
-     * @small
-     *
-     * @covers \MiBo\PX\Contracts\HasPermissionsTrait::getPermissions
-     * @covers \MiBo\PX\Contracts\HasPermissionsTrait::hasPermission
-     * @covers \MiBo\PX\Contracts\HasPermissionsTrait::registerPermissions
-     * @covers \MiBo\PX\Contracts\HasPermissionsTrait::hasNotPermission
-     * @covers \MiBo\PX\Contracts\InheritsTrait::getPermissions
-     * @covers \MiBo\PX\Permission::create
-     * @covers \MiBo\PX\Permission::__construct
-     * @covers \MiBo\PX\Permission::__toString
-     * @covers \MiBo\PX\Permission::toString
-     *
-     * @return void
-     */
     public function testPermissions(): void
     {
         $this->verify($this->getTarget(), $this->getTargetVerifyData());

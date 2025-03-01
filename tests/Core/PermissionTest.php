@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace MiBo\PX\Tests\Core;
 
 use MiBo\PX\Permission;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Stringable;
 
@@ -17,21 +19,17 @@ use Stringable;
  *
  * @no-named-arguments Parameter names are not covered by the backward compatibility promise.
  */
+#[CoversClass(Permission::class)]
 final class PermissionTest extends TestCase
 {
     /**
-     * @small
-     *
-     * @covers \MiBo\PX\Permission::is
-     *
      * @param bool $expected
      * @param string $first
      * @param string|\Stringable|\MiBo\PX\Permission $second
      *
      * @return void
-     *
-     * @dataProvider getData
      */
+    #[DataProvider('getData')]
     public function testPermissionIs(bool $expected, string $first, string|Stringable|Permission $second): void
     {
         self::assertSame($expected, Permission::create($first)->is($second));
